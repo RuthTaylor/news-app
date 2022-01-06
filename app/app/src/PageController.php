@@ -3,6 +3,7 @@
 namespace {
 
     use SilverStripe\CMS\Controllers\ContentController;
+    use SilverStripe\View\Requirements;
 
     class PageController extends ContentController
     {
@@ -23,11 +24,14 @@ namespace {
          */
         private static $allowed_actions = [];
 
-        protected function init()
-        {
-            parent::init();
-            // You can include any CSS or JS required by your project here.
-            // See: https://docs.silverstripe.org/en/developer_guides/templates/requirements/
-        }
+    protected function init()
+    {
+        parent::init();
+
+        //normally I would in combine_files for these. Not bothering cos there's only few for the prototype.
+        Requirements::css('themes/custom/css/reset.css');
+        Requirements::css('themes/custom/css/flexboxgrid.min.css');
+        Requirements::css('themes/custom/css/styles.css');
     }
+}
 }

@@ -1,0 +1,34 @@
+/*** Prototype styles ***/
+
+body {
+    background: #222;
+    color: #fff;
+    font-size: 16px;
+    font-family: "Actor", Arial, sans-serif;
+}
+
+.accessibilityLink {
+    opacity: 0;
+    z-index: -1;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    padding: 10px;
+    background: #000;
+    color: #fff;
+}
+.accessibilityLink:focus {
+    opacity: 1;
+    z-index: 99999;
+}
+
+.pageContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    min-height: 100vh;
+    max-width: 1920px;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}

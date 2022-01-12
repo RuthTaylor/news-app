@@ -27,7 +27,11 @@
             ".htaccess",
             "index.php",
             "web.config"
-        ]
+        ],
+		"expose": [
+			"themes/custom/css",
+			"themes/custom/javascript"
+		]
     },
     "config": {
         "process-timeout": 600

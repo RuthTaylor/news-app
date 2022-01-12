@@ -32,3 +32,126 @@ body {
     margin-left: 1rem;
     margin-right: 1rem;
 }
+
+.searchForm {
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 500px;
+    margin-top: 10vw;
+    margin-bottom: 10vw;
+    padding: 1vw 2vw;
+    background-color: #c25531;
+    background: linear-gradient(-45deg, #c25531, #d477b4);
+    border-radius: 6px;
+    text-align: left;
+    font-size: 24px;
+}
+
+.searchForm fieldset,
+.searchForm input {
+    width: 100%;
+}
+
+.searchForm label {
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.searchForm input,
+.searchForm button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    outline: 0;
+}
+
+.searchForm input {
+    flex: 1;
+    padding: 0.5rem;
+    background-color: #222;
+    border-radius: 12px;
+    transition: all 250ms;
+}
+.searchForm input:hover,
+.searchForm input:focus {
+    background: #333;
+}
+
+.searchForm button {
+    position: relative;
+    width: 44px;
+    margin-left: 1rem;
+    padding: 0.5rem;
+    text-indent: -999px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.searchForm button:before,
+.searchForm button:after {
+    content: "";
+    position: absolute;
+}
+.searchForm button:before {
+    top: 8px;
+    left: 8px;
+    width: 24px;
+    height: 24px;
+    border: solid 3px #fff;
+    border-radius: 50%;
+}
+.searchForm button:after {
+    top: 28px;
+    left: 28px;
+    width: 3px;
+    height: 12px;
+    background-color: #fff;
+    transform: rotate(-36deg);
+}
+
+.searchForm input::-moz-placeholder {
+    color: #fff;
+}
+.searchForm input:-ms-input-placeholder {
+    color: #fff;
+}
+.searchForm input::placeholder {
+    color: #fff;
+}
+
+.searchResults {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+.searchResults__title {
+    padding: 0.5rem 1rem;
+    background-color: #413039;
+    text-align: left;
+    font-size: 24px;
+    transform: translateY(1px);
+    position: relative;
+    z-index: 1;
+}
+.searchResults__item {
+    position: relative;
+    padding: 2rem 1rem;
+    border-top: solid 1px #5e5656;
+}
+.searchResults__link {
+    font-size: 20px;
+    cursor: pointer;
+    transition: 270ms color cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.searchResults__link:hover {
+    color: #d477b4;
+}
+.searchResults__date {
+    margin-bottom: 4px;
+    font-size: 14px;
+}

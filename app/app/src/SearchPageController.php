@@ -3,11 +3,13 @@
 namespace Portable\NewsApp;
 
 use PageController;
+use SilverStripe\Control\Controller;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\Form;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\GroupedList;
+use SilverStripe\View\ArrayData;
 
 class SearchPageController extends PageController
 {
@@ -56,10 +58,21 @@ class SearchPageController extends PageController
             //group list for display in template
             $results = GroupedList::create($results);
 
-            //else return data as normal
-            return $this->customise([
-                'Results' => $results
-            ]);
+            $request = Controller::curr()->request;
+
+            //check if ajax call
+            if ($request->isAjax()) {
+                return $this->customise(new ArrayData([
+                    'HasSearched' => true,
+                    'Results' => $results
+                ]))->renderWith('SearchResults');
+            } else {
+                //else return data as normal
+                return $this->customise([
+                    'HasSearched' => true,
+                    'Results' => $results
+                ]);
+            }
         }
     }
 }

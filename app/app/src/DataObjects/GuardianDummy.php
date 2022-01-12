@@ -22,4 +22,13 @@ class GuardianDummy extends DataObject
     //Summary fields
     //Field labels
     //CMS Fields etc.
+    
+    /**
+    * Returns the first letter of the "Section", used for grouping.
+    * @return string
+    */
+    public function getSectionFirstLetter()
+    {
+        return $this->Section[0];
+    }
 }

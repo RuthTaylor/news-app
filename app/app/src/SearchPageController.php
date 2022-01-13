@@ -4,10 +4,13 @@ namespace Portable\NewsApp;
 
 use PageController;
 use SilverStripe\Control\Controller;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\Form;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\TextField;
+use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\GroupedList;
 use SilverStripe\View\ArrayData;
 
@@ -15,6 +18,7 @@ class SearchPageController extends PageController
 {
     private static $allowed_actions = [
         'GuardianSearchForm',
+        'pinMe'
     ];
 
     protected function init()
@@ -48,17 +52,32 @@ class SearchPageController extends PageController
     public function searchDummyData($data, Form $form)
     {
         if (isset($data) && $data != null) {
+            $request = Controller::curr()->request;
             $searchTerm = $data['Keywords'];
 
             //filter data
-            $results = GuardianDummy::get()->filter([
+            $filteredResults = GuardianDummy::get()->filter([
                     'Title:PartialMatch' => $searchTerm
                 ])->sort('Date DESC');
 
+            //include pinned items
+            $session = $request->getSession();
+            $pinnedItems = $session->get('PinnedSearchResults');
+
+            $pinnedResults = GuardianDummy::get()->filter([
+                'ID' => $pinnedItems
+            ])->sort('Date DESC');
+
+            //merge two lists
+            $results = new ArrayList();
+            $results->merge($filteredResults);
+            $results->merge($pinnedResults);
+
+            //remove duplicates
+            $results->removeDuplicates('ID');
+
             //group list for display in template
             $results = GroupedList::create($results);
-
-            $request = Controller::curr()->request;
 
             //check if ajax call
             if ($request->isAjax()) {
@@ -74,5 +93,34 @@ class SearchPageController extends PageController
                 ]);
             }
         }
+    }
+
+    public function pinMe(HTTPRequest $request)
+    {
+        $itemID = $request->param('ID');
+
+        if (isset($itemID) && $itemID != null) {
+            $session = $request->getSession();
+            $pinnedItems = $session->get('PinnedSearchResults');
+            
+            if ($pinnedItems == null) {
+                //if null (i.e. no session yet), reset to empty array.
+                $pinnedItems = [];
+            }
+
+            //check if item exists in array
+            if (in_array($itemID, $pinnedItems)) {
+                $pinnedItems = array_diff($pinnedItems, array($itemID));
+                $session->set('PinnedSearchResults', $pinnedItems);
+
+                return 'unpin';
+            } else {
+                array_push($pinnedItems, $itemID);
+                $session->set('PinnedSearchResults', $pinnedItems);
+
+                return 'pin';
+            }
+        }
+        return;
     }
 }

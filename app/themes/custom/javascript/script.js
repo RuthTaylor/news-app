@@ -22,6 +22,22 @@
 				$ajaxDiv.html('<p>Sorry, we could not get results at this time. Please try again later.</p>');
 			});
 		});
-		
+
+		$('body').on('click', '.searchResults_button', function() {
+			var $this = $(this);
+			var url = $this.attr('data-ajax-url');
+			$.ajax({
+				url: url,
+			})
+			.done(function(data){
+				if (data == 'pin') {
+					$this.parents('.searchResults__item').addClass('-pinned');
+				}
+				else if (data == 'unpin') {
+					$this.parents('.searchResults__item').removeClass('-pinned');
+				}
+			});
+		});
+
 	});
 })(jQuery);

@@ -2,6 +2,8 @@
 
 namespace Portable\NewsApp;
 
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataObject;
 
 class GuardianDummy extends DataObject
@@ -30,5 +32,18 @@ class GuardianDummy extends DataObject
     public function getSectionFirstLetter()
     {
         return $this->Section[0];
+    }
+
+    public function IsPinned()
+    {
+        $request = Injector::inst()->get(HTTPRequest::class);
+        $session = $request->getSession();
+
+        $pinnedIds = $session->get('PinnedSearchResults');
+
+        if ($pinnedIds != null && in_array($this->ID, $pinnedIds)) {
+            return true;
+        }
+        return false;
     }
 }

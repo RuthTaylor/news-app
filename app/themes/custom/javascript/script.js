@@ -26,16 +26,16 @@
 		$('body').on('click', '.searchResults_button', function() {
 			var $this = $(this);
 			var url = $this.attr('data-ajax-url');
+			var currentVal = $('.searchForm input').val();
+			url = url + '/' + currentVal;
+			var $ajaxDiv = $('.ajaxResults').first();	
+			
 			$.ajax({
 				url: url,
 			})
 			.done(function(data){
-				if (data == 'pin') {
-					$this.parents('.searchResults__item').addClass('-pinned');
-				}
-				else if (data == 'unpin') {
-					$this.parents('.searchResults__item').removeClass('-pinned');
-				}
+				//console.log(data);
+				$ajaxDiv.html(data);
 			});
 		});
 

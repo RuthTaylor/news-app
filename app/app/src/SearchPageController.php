@@ -18,7 +18,7 @@ class SearchPageController extends PageController
 {
     private static $allowed_actions = [
         'GuardianSearchForm',
-        'pinMe'
+        'pin'
     ];
 
     protected function init()
@@ -52,52 +52,19 @@ class SearchPageController extends PageController
     public function searchDummyData($data, Form $form)
     {
         if (isset($data) && $data != null) {
-            $request = Controller::curr()->request;
             $searchTerm = $data['Keywords'];
 
-            //filter data
-            $filteredResults = GuardianDummy::get()->filter([
-                    'Title:PartialMatch' => $searchTerm
-                ])->sort('Date DESC');
-
-            //include pinned items
-            $session = $request->getSession();
-            $pinnedItems = $session->get('PinnedSearchResults');
-
-            $pinnedResults = GuardianDummy::get()->filter([
-                'ID' => $pinnedItems
-            ])->sort('Date DESC');
-
-            //merge two lists
-            $results = new ArrayList();
-            $results->merge($filteredResults);
-            $results->merge($pinnedResults);
-
-            //remove duplicates
-            $results->removeDuplicates('ID');
-
-            //group list for display in template
-            $results = GroupedList::create($results);
-
-            //check if ajax call
-            if ($request->isAjax()) {
-                return $this->customise(new ArrayData([
-                    'HasSearched' => true,
-                    'Results' => $results
-                ]))->renderWith('SearchResults');
-            } else {
-                //else return data as normal
-                return $this->customise([
-                    'HasSearched' => true,
-                    'Results' => $results
-                ]);
-            }
+            return $this->GetResults($searchTerm);
         }
     }
 
-    public function pinMe(HTTPRequest $request)
+    public function pin(HTTPRequest $request)
     {
         $itemID = $request->param('ID');
+        $searchTerm = $request->param('Other');
+        if (!isset($searchTerm) && $searchTerm == null) {
+            $searchTerm = '';
+        }
 
         if (isset($itemID) && $itemID != null) {
             $session = $request->getSession();
@@ -112,15 +79,62 @@ class SearchPageController extends PageController
             if (in_array($itemID, $pinnedItems)) {
                 $pinnedItems = array_diff($pinnedItems, array($itemID));
                 $session->set('PinnedSearchResults', $pinnedItems);
-
-                return 'unpin';
             } else {
                 array_push($pinnedItems, $itemID);
                 $session->set('PinnedSearchResults', $pinnedItems);
-
-                return 'pin';
             }
+
+            //return results
+            return $this->GetResults($searchTerm);
         }
         return;
+    }
+
+    public function GetResults($searchTerm = null)
+    {
+        $request = Controller::curr()->request;
+
+        //filter data
+        $filteredResults = GuardianDummy::get()->filter([
+            'Title:PartialMatch' => $searchTerm
+        ])->sort('Date DESC');
+
+        //include pinned items
+        $session = $request->getSession();
+        $pinnedItems = $session->get('PinnedSearchResults');
+
+        if ($pinnedItems != null) {
+            $pinnedResults = GuardianDummy::get()->filter([
+                'ID' => $pinnedItems
+            ])->sort('Date DESC');
+        }
+
+        //merge two lists
+        $results = new ArrayList();
+        $results->merge($filteredResults);
+
+        if ($pinnedItems != null) {
+            $results->merge($pinnedResults);
+        }
+
+        //remove duplicates
+        $results->removeDuplicates('ID');
+
+        //group list for display in template
+        $results = GroupedList::create($results);
+
+        //check if ajax call
+        if ($request->isAjax()) {
+            return $this->customise(new ArrayData([
+                'HasSearched' => true,
+                'Results' => $results
+            ]))->renderWith('SearchResults');
+        } else {
+            //else return data as normal
+            return $this->customise([
+                'HasSearched' => true,
+                'Results' => $results
+            ]);
+        }
     }
 }
